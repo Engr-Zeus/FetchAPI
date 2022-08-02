@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch API</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+         function closePopup() {
+            document.getElementById("backdrop").style.display = "none"
+            document.getElementById("updateModal").style.display = "none"
+            document.getElementById("updateModal").classList.remove("show")
+            }
+    </script>
+</head>
+
+<body class="container p-5">
+<!-- The Modal -->
+<div class="modal fade" id="updateModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Update Post</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="closePopup()">
+          </button>
+        </div>
+  
+        <!-- Modal body -->
+        <div class="modal-body">
+            <form class="form-group card p-3 m-1" id="updatePostForm">
+                <div class="form-group">
+                    <input type="text" id="updateId" class="form-control" readonly>
+                    <label for="updateTitle">Title </label>
+                    <input type="text" id="updateTitle" class="form-control">
+                </div>
+                
+                <div class="form-group mb-5">
+                    <label for="updateBody">Body </label>
+                    <textarea id="updateBody" class="form-control"
+                    placeholder="input the body here">
+                    </textarea>
+                </div>
+                <input type="submit" class="btn btn-outline-primary" value="Update Post">
+                
+            </form>
+        </div>
+  
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="closePopup()">Close</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show" id="backdrop" style="display: none;"></div>
+<!-- end of popup -->
+
+
+    
+
+    <div class="row">
+
+
+        <!-- first column -->
+        <div class="col-md-9">
+            <div id="alert"></div>
+            
+            <div class="row" id="output">
+                <h1>
+                    <marquee>
+                        Loading Content from API.......
+                    </marquee>
+
+                </h1>
+
+            </div>
+
+        </div>
+        <!-- second column -->
+        <div class="col-md-3">
+            <div class="card d-flex">
+
+
+                <div class="card d-flex">
+                    <form class="form-group card p-3 m-1" id="addPost">
+                        <div class="form-group">
+
+                            <label for="title">Title </label>
+                            <input type="text" id="title" class="form-control">
+                        </div>
+                        <div class="form-group">
+
+                            <label for="author">Author </label>
+                            <input type="text" id="author" class="form-control">
+                        </div>
+
+
+                        <div class="form-group mb-5">
+                            <label for="body">Body </label>
+                            <textarea id="body" class="form-control" placeholder="input the body here">
+                            </textarea>
+                        </div>
+                        <input type="submit" class="btn btn-primary" value="Publish Post">
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- first column end -->
+
+
+    </div>
+    <script>
+
+//load the resources from the api on loading of webpage
+        window.addEventListener(
+            'load', fetchAPIfunction
+        )
+
+//function to fetch the API resources
+        function fetchAPIfunction() {
+            document.getElementById('title').value = '';
+            document.getElementById('author').value = '';
+            document.getElementById('body').value = '';
+
+            fetch('https://emmi-softwaretrack.online/api/blogs')
+                .then(
+
+                    (res) => {
+                        if (!res.ok) throw new Error(`the HTTP error is ${res.status}`);
+
+                        return res.json()
+
+                    }
+                )
+                .then(
+
+                    (data) => {
+                        // console.log(data.data)
+                        let output = '';
+                        data.data.forEach(
+                            (blog) => {
+                                output += `
+            <div class="col-md-6 p-1">
+                <div class="card p-3">
+                    <ul style='list-style-type:none'>
+                       
+                        <li><h2> ${blog.title}  </h2> </li>
+                        <li><small><strong>Published on ${new Date(blog.created_at)} <br>By ${blog.author} </strong> </small> </li>
+                        
+                        <li><p> ${blog.body}   <p> </li>
+                        <li>  </li>
+                    </ul>
+                    <button class="btn btn-outline-secondary updatePost" id="updatePost" data-id="${blog.id}" >
+                            Update Post
+                    </button> 
+                    <button class="btn btn-danger mt-2 deletePost" id="deletePost" data-id="${blog.id}">
+                        Delete Post ${blog.title}
+                    </button>
+            
+                    
+                </div>
+            </div>
+            
+            `
+                                document.getElementById('output').innerHTML = output;
+                                window.localStorage.setItem("data", JSON.stringify(data.data));
+                                waitLoadUpdate();
+                                waitLoad()
+                                
+                            });
+
+
+                    }
+                )
+                .catch(
+
+                    (err) => console.error(err.message)
+
+                )
+        }
+        //end
+
+
+
+        //add blog post
+        const addPost = document.getElementById('addPost');
+        addPost.addEventListener(
+            'submit',
+            addBlogPost
+        );
+
+        function addBlogPost(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value
+            const author = document.getElementById('author').value
+            const body = document.getElementById('body').value
+            const url = 'https://emmi-softwaretrack.online/api/blogs';
+            fetch(url,
+                {
+                    method: 'POST',
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(
+                        {
+                            title: title,
+                            author: author,
+                            body: body
+                        }
+                    )
+
+                }
+
+            )
+                .then(
+                    (res) => res.json()
+                )
+                .then(
+                    (data) => {
+                        // console.log(data)
+                        alert(data.message)
+                        setTimeout(
+                            fetchAPIfunction,
+                            100
+                        )
+                    }
+                )
+
+        }
+
+
+        //update part
+        function waitLoadUpdate() {
+                //newData is the array of objects from our server that was previously cached/stored using local storage
+        function searchStorage(postID, newData) {
+            // console.log(newData.length + ' and the postID is ' + postID)
+            for(i = 0; i < newData.length; i++ ){
+                // console.log(newData[i])
+                if (newData[i].id == postID) {
+                    // console.log(newData[i])
+
+                    document.getElementById('updateId').value = postID;
+                    document.getElementById('updateTitle').value = newData[i].title;
+                    document.getElementById('updateBody').value = newData[i].body;
+                    showPopup();
+                
+
+                    break;
+                }
+
+            }
+        }
+
+        function showPopup(){
+            document.getElementById("backdrop").style.display = "block";
+            document.getElementById("updateModal").style.display = "block";
+            document.getElementById("updateModal").classList.add("show");
+            
+
+        }
+
+        const updateButton = document.querySelectorAll('.updatePost')
+        updateButton.forEach(
+            button => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        let postID = button.dataset.id;
+                        // console.log(postID);
+                        let newData = JSON.parse(localStorage.getItem("data"))
+                       searchStorage(postID, newData) //this searchstorage fxn helps us to access the entire API GET request and search for individual posts
+                    }
+                )
+            }
+        )
+
+        }
+                    
+        const updateBlog = document.getElementById('updatePostForm');
+        updateBlog.addEventListener(
+                'submit',
+                updateBlogPost
+        );
+
+        function updateBlogPost(e) {
+            e.preventDefault(); //prevent the element from acting naturally in its default behaviour
+
+            const id = document.getElementById('updateId').value
+            const title = document.getElementById('updateTitle').value
+            const body = document.getElementById('updateBody').value
+            const url = `https://emmi-softwaretrack.online/api/update-blog/${id}`;
+            fetch(url,
+                {
+                    method: 'PUT',
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(
+                        {
+                            title: title,
+                            body: body
+                        }
+                    )
+
+                }
+
+            )
+                .then(
+                    (res) => res.json()
+                )
+                .then(
+                    (data) => {
+                        closePopup();
+                        alert(data.message)
+                        setTimeout(
+                            fetchAPIfunction,
+                            100
+                        )
+                    }
+                )
+
+        }
+
+
+
+
+
+
+
+        //delete button part
+        function waitLoad(){
+        const deletePost = document.querySelectorAll('.deletePost');
+        // console.log(deletePost);
+        deletePost.forEach(
+            button => {
+                button.addEventListener(
+                   'click', () => {
+                   
+                        let id = button.dataset.id
+                        let text = `Do you want to Delete Post ${id}`
+                        if(confirm(text) == true){
+                            deleteBlogPost(id)
+                        } else{
+                            fetchAPIfunction()
+                        }
+                    
+                   } 
+                )
+            }
+        )
+        }
+            
+        function deleteBlogPost(id){
+            
+            const url = `https://emmi-softwaretrack.online/api/delete-blog/${id}`
+            fetch(
+                url,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        "Accept" : "application/json",
+                        "Content-type" : "application/json"
+                    }
+                }
+
+            )
+            .then(
+                (res) => res.json()
+            )
+            .then(
+                (data) => {
+                        // console.log(data)
+                        sweetAlert(data.message)
+                        setTimeout(
+                            fetchAPIfunction,
+                            100
+                        )
+                    }
+            )
+        }
+
+        //for alerts
+        function sweetAlert(msg){
+            document.getElementById('alert').innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            ${msg}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+                `
+        }
+
+    </script>
+
+<script src="js/bootstrap.min.js"></script>
+</body>
+
+</html>

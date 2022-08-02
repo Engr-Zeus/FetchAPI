@@ -1,0 +1,114 @@
+header{
+    padding-left: 20px;
+    
+}
+header nav {
+    margin-right: 20px;
+}
+header nav a{
+    font-weight: 600;
+}
+header nav li a:hover{
+    border-bottom: 2px solid white;
+}
+
+.brandname {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 900;
+    color: #fafbfd;
+    -webkit-text-stroke: 2px rgb(5, 3, 82);
+    text-shadow: 4px 4px 2px #1F0D08;
+    font-size: 25px;
+}
+
+/* CUSTOMIZE THE CAROUSEL
+-------------------------------------------------- */
+#myCarousel{
+    margin-top: 30px;
+}
+
+/* Carousel base class */
+.carousel {
+    margin-bottom: 4rem;
+}
+
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+    bottom: 3rem;
+    z-index: 10;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel-item {
+    height: 32rem;
+}
+
+.carousel-item>img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    height: 32rem;
+}
+
+/* RESPONSIVE CSS
+-------------------------------------------------- */
+
+@media (min-width: 640px) {
+
+    /* Bump up size of carousel content */
+    .carousel-caption p {
+        margin-bottom: 20px;
+        font-size: 20px;
+        line-height: 1.4;
+    }
+    .carousel-item img{
+        width: 50%;
+        height: 50;
+    }
+}
+@media (min-width: 375px) {
+
+    /* Bump up size of carousel content */
+    .carousel-caption p {
+        margin-bottom: 10px;
+        font-size: 15px;
+        line-height: 1.1;
+    }
+    .carousel-caption h1 {
+        
+        font-size: 25px;
+    }
+    .carousel-item img{
+        width: 30%;
+        height: 30;
+    }
+}
+
+.Copyright{
+    width: 100%;
+    background-color: black;
+    margin: 0;
+    padding: 10px;
+}
+
+footer{
+    margin-top: 10px;
+}
+
+.footerSection a{
+    text-decoration: none;
+}
+.footerSection a:hover{
+    text-decoration: underline;
+}
+.author{
+    color: blue;
+    font-size: 15px;
+    line-height: 0.3;
+    text-transform: capitalize;
+}
+.publish{
+    color: blue;
+    font-size: 15px;
+}
